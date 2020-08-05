@@ -174,7 +174,7 @@ if there are no messages the response will be:
 {
     "message": "no unread messages"
 }
-
+```
 if there is no logged in user the response will be:
 
 ```
