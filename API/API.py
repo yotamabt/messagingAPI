@@ -3,8 +3,7 @@ from flask import request,session,jsonify,render_template_string ,redirect
 import sqlite3
 from user import User
 import datetime
-from TableGen import Table
-import json
+
 
 # connect to database
 database = sqlite3.connect('MockData.db' ,check_same_thread=False)
@@ -200,7 +199,19 @@ def deleteMessage(user ,mid):
     # return success message
     return {"message":"message number {0} was successfully deleted".format(mid)}
 
+# render a table from a list of dictionaries
+def renderTable(dictlist):
+    headerslist = ["#"] + list(dictlist[0].keys())
+    header = "<thead><th>" + "</th><th>".join(headerslist)+"</th>"
+    rows = []
+    index = 1
+    for row in dictlist:
+        vals = [str(index)] +list(row.values())
+        rows.append("<tr><td>"+"</td><td>".join(str(v) for v in vals) + "</td></tr>")
+        index += 1
+    innerstr = header +"<tbody>"+"".join(rows)+"</tbody>"
 
+    return "<table>{0}</table>".format(innerstr)
 
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -392,9 +403,9 @@ def visualMessages():
 
         #if one of the objects is empty make it an object that tablegen can handel
         if len(inbox) == 0 :
-            inbox = [{"Messages" : "None"}]
+            inbox = [{"No Messages" : ""}]
         if len(outbox) == 0 :
-            outbox= [{" No Messages" : ""}]
+            outbox= [{"No Messages" : ""}]
 
         #style string
         style = '''<style>
@@ -446,8 +457,8 @@ def visualMessages():
                 
                 </style> '''
         # take html tables from tablegen (another package I made ) and cut only the table part from the full HTML
-        inboxHTML = Table(inbox,index = True,HTMLtableclass="msg").HTMLString.split("<body>")[1].split("</body>")[0]
-        outboxHTML = Table(outbox,index = True,HTMLtableclass="msg").HTMLString.split("<body>")[1].split("</body>")[0]
+        inboxHTML = renderTable(inbox)
+        outboxHTML = renderTable(outbox)
 
         # build a final HTML string
         html = style + "<h3> {0}'s Messages</h3>".format(session["username"]) + "<br><br><h3>Inbox:</h3> <br><br>" + inboxHTML + \
