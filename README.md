@@ -137,6 +137,8 @@ if there are no messages the response will be:
     "message": "outbox empty"
 }
 
+```
+
 if there is no logged in user the response will be:
 
 ```
